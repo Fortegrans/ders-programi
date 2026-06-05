@@ -3,7 +3,7 @@ import React from 'react'
 const GUNLER = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma']
 const SAATLER = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
 
-function DersProgrami({ dersler }) {
+function DersProgrami({ dersler, onDersSil }) {
   return (
     <div className="table-responsive">
       <table className="table table-bordered table-striped text-center">
@@ -23,7 +23,17 @@ function DersProgrami({ dersler }) {
                 const ders = dersler.find(d => d.gun === gun && d.saat === saat)
                 return (
                   <td key={gun} className={ders ? 'table-success' : ''}>
-                    {ders ? ders.dersAdi : ''}
+                    {ders ? (
+                      <div>
+                        <div>{ders.dersAdi}</div>
+                        <button
+                          className="btn btn-danger btn-sm mt-1"
+                          onClick={() => onDersSil(ders.id)}
+                        >
+                          Sil
+                        </button>
+                      </div>
+                    ) : ''}
                   </td>
                 )
               })}
