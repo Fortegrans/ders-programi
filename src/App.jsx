@@ -1,24 +1,26 @@
 import { useState, useEffect } from 'react'
+import { collection, addDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore'
+import { db } from './firebase'
 import DersFormu from './components/DersFormu'
 import DersProgrami from './components/DersProgrami'
 
 function App() {
-  const [dersler, setDersler] = useState(() => {
-    const kayitli = localStorage.getItem('dersler')
-    return kayitli ? JSON.parse(kayitli) : []
-  })
+  const [dersler, setDersler] = useState([])
 
   useEffect(() => {
-    localStorage.setItem('dersler', JSON.stringify(dersler))
-  }, [dersler])
+    const unsub = onSnapshot(collection(db, 'dersler'), (snapshot) => {
+      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+      setDersler(data)
+    })
+    return () => unsub()
+  }, [])
 
-  function dersSil(index) {
-    const yeni = dersler.filter((_, i) => i !== index)
-    setDersler(yeni)
+  async function dersEkle(yeniDers) {
+    await addDoc(collection(db, 'dersler'), yeniDers)
   }
 
-  function dersEkle(yeniDers) {
-    setDersler([...dersler, yeniDers])
+  async function dersSil(id) {
+    await deleteDoc(doc(db, 'dersler', id))
   }
 
   return (
